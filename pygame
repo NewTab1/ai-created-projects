@@ -1,0 +1,79 @@
+import pygame
+import random
+
+# Initialize pygame
+pygame.init()
+
+# Constants
+BLOCK_SIZE = 50
+WINDOW_SIZE = (800, 600)
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# Create the game window
+screen = pygame.display.set_mode(WINDOW_SIZE)
+pygame.display.set_caption("My Minecraft")
+
+# Create the block texture
+block_texture = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+block_texture.fill(GREEN)
+
+# Create the world
+world = []
+for x in range(10):
+    row = []
+    for y in range(10):
+        # Generate a random block
+        if random.random() > 0.5:
+            row.append(1)
+        else:
+            row.append(0)
+    world.append(row)
+
+# Create the player
+player_pos = [5, 5]
+
+# Game loop
+running = True
+while running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                player_pos[1] -= 1
+            elif event.key == pygame.K_DOWN:
+                player_pos[1] += 1
+            elif event.key == pygame.K_LEFT:
+                player_pos[0] -= 1
+            elif event.key == pygame.K_RIGHT:
+                player_pos[0] += 1
+            elif event.key == pygame.K_SPACE:
+                # Break the block in front of the player
+                if player_pos[1] > 0 and world[player_pos[0]][player_pos[1] - 1]:
+                    world[player_pos[0]][player_pos[1] - 1] = 0
+
+    # Clear the screen
+    screen.fill(BLACK)
+
+    # Draw the world
+    for x, row in enumerate(world):
+        for y, block in enumerate(row):
+            if block:
+                screen.blit(block_texture, (x * BLOCK_SIZE, y * BLOCK_SIZE))
+
+    # Draw the player
+    pygame.draw.circle(screen, BLUE, (player_pos[0] * BLOCK_SIZE + BLOCK_SIZE // 2,
+                                      player_pos[1] * BLOCK_SIZE + BLOCK_SIZE // 2),
+                       BLOCK_SIZE // 2)
+
+    # Update the display
+    pygame.display.flip()
+
+# Quit the game
+pygame.quit()
